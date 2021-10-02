@@ -7,3 +7,20 @@ An Open-Source solution that enables users to build Low-Code custom web-based ap
 
 ![Design your webbased app](https://valstekt.com/assets/public_docs/opensourceappdesign/app-design.png)
 
+
+## Aspects of this solution
+
+1. Group
+2. Dashboard
+3. Feature
+4. Workflow
+5. Role
+6. Data-Table
+7. Page
+8. Control
+9. Data-Field
+10. Control-Type
+11. Control-Validation
+12. Control-Action
+
+
