@@ -10,17 +10,17 @@ An Open-Source solution that enables users to build Low-Code custom web-based ap
 
 ## Aspects of this solution that are to be dynamically created:
 
-1. Group
-2. Dashboard
-3. Feature
-4. Workflow
-5. Role
-6. Data-Table
-7. Page
-8. Control
-9. Data-Field
-10. Control-Type
-11. Control-Validation
-12. Control-Action
+1. Groups
+2. Dashboards
+3. Features
+4. Workflows
+5. Roles
+6. Data-Tables
+7. Pages
+8. Controls
+9. Data-Fields
+10. Control-Types
+11. Control-Validations
+12. Control-Actions
 
 
