@@ -8,7 +8,7 @@ An Open-Source solution that enables users to build Low-Code custom web-based ap
 ![Design your webbased app](https://valstekt.com/assets/public_docs/opensourceappdesign/app-design.png)
 
 
-## Aspects of this solution
+## Aspects of this solution that are to be dynamically created:
 
 1. Group
 2. Dashboard
