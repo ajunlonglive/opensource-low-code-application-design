@@ -1,0 +1,96 @@
+﻿@model Presentation.ViewModels.GroupAssistanceViewModel
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+
+@if (Model.IsInternal)
+{
+    <h4>Manage Internal Groups &nbsp; <i class="fa fa-lock fa-4x" style="font-size:60px;color:green;"></i></h4>
+}
+else
+{
+    <h4>Manage External Groups &nbsp; <i class="fa fa-lock fa-4x" style="font-size:60px;color:orange;"></i></h4>
+}
+
+<hr />
+<div class="e-wrapper-container">
+    <input type="hidden" id="RequestVerificationToken"
+           name="RequestVerificationToken" value="@GetAntiXsrfRequestToken()" />
+    <div class="row">
+        <div class="col-md-8">
+            <button id="AddGroup">Add Group</button>
+            <ejs-treeview id="hierarchical" allowEditing="true" loadOnDemand="false"
+                          allowMultiSelection="false" allowDragAndDrop="false"
+                          actionFailure="actionFail"
+                          nodeSelected="AfterSelect"
+                          nodeClicked="nodeclicked"
+                          nodeEdited="AfterEdit"
+                          nodeEditing="BeforeEdit"
+                          nodeTemplate="@Html.Raw("<div><i class=\"fas fa-sitemap fa-2x\" /><div class=\"ename\"> ${Name} </div></div>")">
+                <e-treeview-fields Id="Id" ParentID="ParentGroupId" Text="Name"
+                                   HasChildren="HasChildren"
+                                   query="new ej.data.Query().addParams('GroupId', '@Model.GroupId')">
+                    <e-data-manager url="/Designer/Groups/GetGroupList" adaptor="UrlAdaptor" offline="false"></e-data-manager>
+                </e-treeview-fields>
+            </ejs-treeview>
+        </div>
+        <hr />
+    </div>
+</div>
+
+<script>
+
+    // TreeView Events start
+
+    var ele;
+    var arr = [];
+    function AfterSelect(args) {
+        ele = args.node;
+
+        console.log(args.node);
+    }
+
+    function BeforeEdit(args) {
+        console.log("BeforeEdit" + args);
+    }
+
+    function AfterEdit(args) {
+        console.log("AfterEdit" + args);
+    }
+
+    function nodeclicked(args) {
+        //var node_id = args.node.getAttribute("data-uid");
+        //var node_data = this.getTreeData(node_id)[0];
+        //document.getElementById("GroupName").innerText = node_data["Name"];
+        //var gridObj = document.getElementById("DataModelsGrid").ej2_instances[0];
+        //gridObj.query = new ej.data.Query();
+        //gridObj.query.addParams('GroupId', node_id);
+        //gridObj.refreshData();
+    }
+
+
+    document.getElementById('AddGroup').addEventListener('click', function () {
+        //var treeObj = document.getElementById('hierarchical').ej2_instances[0];
+        //// var newNode = [{ OrderID: 10000, CustomerID: "NewNode" }, { OrderID: 10001, CustomerID: "NewNode11" }]
+        //var newNode = [{ OrderID: 10000, CustomerID: "NewNode" }]
+        //treeObj.addNodes(newNode, treeObj.selectedNodes[0], 1, false);
+    })
+
+
+    function actionFail(args) {
+        console.log(args);
+        alert("Action Failed")
+    }
+
+    // TreeView Events end
+</script>
+
+<ejs-scripts></ejs-scripts>

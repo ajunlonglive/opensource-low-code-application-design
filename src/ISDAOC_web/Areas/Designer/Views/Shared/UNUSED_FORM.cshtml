@@ -1,0 +1,160 @@
+﻿@*@using Presentation.ViewModels
+@model DCAppFeatureViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout.cshtml";
+}
+
+<h3>@Model.Name [Feature]</h3>
+<h5>@Model.Description</h5>
+
+<div class="e-wrapper-container">
+    <div class="row">
+        <span class="pull-right">
+            <button class="btn-danger">Disable Feature</button>
+        </span>
+    </div>
+    <div class="row">
+        <span class="pull-right">
+            <button class="btn-success">Go to @Model.GroupName</button>
+        </span>
+    </div>
+    <h4>Feature Builder</h4>
+    <div id="builder"></div>
+    <div>
+        <button class="btn-primary btn-lg" id="saveForm" value="Save Form" onclick="SaveForm();">Save Form</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+     $.ensure = function (selector) {
+    var promise = $.Deferred();
+    var interval = setInterval(function () {
+      if ($(selector)[0]) {
+        clearInterval(interval);
+        promise.resolve();
+      }
+    }, 1);
+    return promise;
+  };
+
+// my-app.js
+
+    function runWhenMyElementExists() {
+        console.log("loading builder");
+      LoadBuilder();
+  }
+
+  $.ensure('#builder')
+        .then(runWhenMyElementExists);
+
+    var exBuilder;
+    function LoadBuilder() {
+        Formio.builder(document.getElementById('builder'), {}, {
+            builder: {
+                basic: false,
+                advanced: false,
+                data: false,
+                customBasic: {
+                    title: 'Basic',
+                    default: true,
+                    weight: 0,
+                    components: {
+                        textfield: true,
+                        textarea: true,
+                        email: true,
+                        phoneNumber: true
+                    }
+                },
+                custom: {
+                    title: 'User Fields',
+                    weight: 10,
+                    components: {
+                        MyResource: {
+                            title: 'Resource',
+                            key: 'MyResource',
+                            icon: 'fa fa-terminal',
+                            schema: {
+                                label: 'Resource',
+                                type: 'resource',
+                                key: 'MyResource',
+                                input: true
+                            }
+                        },
+                        lastName: {
+                            title: 'Last Name',
+                            key: 'lastName',
+                            icon: 'fa fa-terminal',
+                            schema: {
+                                label: 'Last Name',
+                                type: 'textfield',
+                                key: 'lastName',
+                                input: true
+                            }
+                        },
+                        email: {
+                            title: 'Email',
+                            key: 'email',
+                            icon: 'fa fa-at',
+                            schema: {
+                                label: 'Email',
+                                type: 'email',
+                                key: 'email',
+                                input: true
+                            }
+                        },
+                        phoneNumber: {
+                            title: 'Mobile Phone',
+                            key: 'mobilePhone',
+                            icon: 'fa fa-phone-square',
+                            schema: {
+                                label: 'Mobile Phone',
+                                type: 'phoneNumber',
+                                key: 'mobilePhone',
+                                input: true
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    components: {
+                        table: false
+                    }
+                }
+            },
+            editForm: {
+                textfield: [
+                    {
+                        key: 'api',
+                        ignore: true
+                    }
+                ]
+            }
+        }).then(function (builder) {
+            /*form.nosubmit = true;
+            builder.on('submit', function (submission) {
+                // submit click
+            });*/
+            builder.on('saveComponent', function () {
+                exBuilder = builder;
+                //console.log(builder.schema);
+            });
+        });
+    };
+
+    function SaveForm() {
+        console.log(exBuilder.schema);
+
+        $.ajax({
+            type: 'POST',
+            url: '/Json/Builder',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(exBuilder.schema),
+            success: function (result) {
+                window.location.replace(result.newUrl);
+            }
+        });
+    };
+</script>*@

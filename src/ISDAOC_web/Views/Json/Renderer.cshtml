@@ -1,0 +1,52 @@
+﻿@using Domain.FormEntities
+@model Components
+
+<link href="http://formio.github.io/formio.js/app/syntax.css" rel="stylesheet">
+<link href="http://formio.github.io/formio.js/app/main.css" rel="stylesheet">
+<link href="http://formio.github.io/formio.js/app/fontawesome/css/font-awesome.min.css" rel="stylesheet">
+<link href="http://formio.github.io/formio.js/app/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<link href="http://formio.github.io/formio.js/app/bootswatch/yeti/bootstrap.min.css" rel="stylesheet">
+
+<link href="http://formio.github.io/formio.js/dist/formio.full.min.css" rel="stylesheet">
+<script src="http://formio.github.io/formio.js/app/jquery/jquery.slim.min.js"></script>
+<script src="http://formio.github.io/formio.js/app/bootstrap/js/bootstrap.min.js"></script>
+<script src="http://formio.github.io/formio.js/dist/formio.full.min.js"></script>
+<script type="text/javascript">Formio.icons = 'fontawesome';</script>
+<script type="text/javascript">Formio.setUser(null);</script>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<div id="builder"></div>
+
+@*<H3 id="heading">Data from server</H3>
+<div id="info"></div>*@
+<script type='text/javascript'>
+        window.onload = function () {
+            Formio.icons = 'fontawesome';
+            console.log("rendering: " +@Html.Raw(Json.Serialize(Model)));
+            Formio.createForm(document.getElementById('builder'), @Html.Raw(Json.Serialize(Model))).then(function (form) {
+                form.on('submit', function (submission) {
+                    console.log(submission);
+
+                    return $.ajax({
+                        type: 'POST',
+                        url: '/Json/Renderer',
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        data: JSON.stringify(submission.data),
+                        success: function (result) {
+                            console.log("From server:" + JSON.stringify(result));
+                            window.location.replace(result.newUrl);
+                            //$('#info').html(JSON.stringify(result));
+                        }
+                    });
+                });
+            });
+        }
+</script>

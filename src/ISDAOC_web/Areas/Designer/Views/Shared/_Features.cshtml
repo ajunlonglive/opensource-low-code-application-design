@@ -1,0 +1,142 @@
+﻿@model Presentation.ViewModels.FeatureAssistanceViewModel
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+
+
+@functions{
+    string groupColor = string.Empty;
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+
+
+@if (Model.IsInternal)
+{
+    groupColor = "green";
+    <h4>Manage Internal Views &nbsp; <i class="fa fa-sitemap fa-3x" style="font-size:60px;color:@groupColor;"></i></h4>
+}
+else
+{
+    groupColor = "orange";
+    <h4>Manage External Views &nbsp; <i class="fa fa-sitemap fa-3x" style="font-size:60px;color:@groupColor;"></i></h4>
+}
+
+<div class="e-wrapper-container">
+    @Html.HiddenFor(x => x.IsInternal)
+    @Html.HiddenFor(x => x.GroupId)
+
+    <input type="hidden" id="RequestVerificationToken"
+           name="RequestVerificationToken" value="@GetAntiXsrfRequestToken()" />
+    <div class="row">
+        <div class="col-md-4">
+            <ejs-treeview id="featurehierarchical" allowEditing="false" loadOnDemand="false"
+                          allowMultiSelection="false" allowDragAndDrop="false"
+                          
+                          actionFailure="featureactionFail"
+                          nodeSelected="featureAfterSelect"
+                          nodeClicked="featurenodeclicked"
+                          nodeEdited="featureAfterEdit"
+                          nodeEditing="featureBeforeEdit"
+                          nodeTemplate="@Html.Raw("<div><i class=\"fas fa-sitemap fa-2x\" style=\"color:"+ groupColor + ";\" /><div class=\"ename\"> ${Name} </div></div>")">
+                <e-treeview-fields Id="Id" ParentID="ParentGroupId" Text="Name"
+                                   HasChildren="HasChildren"
+                                   datasource="ViewBag.TreeDatasource">
+                    @*<e-data-manager url="/Designer/Groups/GetGroupList" adaptor="UrlAdaptor" offline="false"
+                        insertUrl="/Designer/Groups/CreateGroup"
+                        updateUrl="/Designer/Groups/UpdateGroup"
+                        removeUrl="/Designer/Groups/RemoveGroup"></e-data-manager>*@
+                </e-treeview-fields>
+            </ejs-treeview>
+        </div>
+        <div class="col-md-6">
+            <div>
+                <h5>Group: <label id="GroupName">Internal</label></h5>
+            </div>
+            <div id="featuresDiv">
+                @*@await Html.PartialAsync("_FeaturesList", Model)*@
+            </div>
+            @*<ejs-grid id="FeaturesGrid"
+                          load="onLoad" allowPaging="true" allowSorting="true"
+                          allowFiltering="true"
+                          actionComplete="actionComplete"
+                          toolbar="@(new List<string>() {"Add", "Edit", "Delete", "Search" })"
+                          query="new ej.data.Query().addParams('GroupId', '@Model.GroupId')">
+                    <e-data-manager url="/Designer/Features/GetFeatureList" adaptor="UrlAdaptor"
+                                    insertUrl="/Designer/Features/CreateFeature"
+                                    updateUrl="/Designer/Features/UpdateFeature"
+                                    removeUrl="/Designer/Features/RemoveFeature"></e-data-manager>
+                    <e-grid-editSettings allowEditing="true" allowAdding="true" allowDeleting="true"
+                                         mode="Dialog" template='#dialogtemplate'></e-grid-editSettings>
+                    <e-grid-columns>
+                        <e-grid-column field="Id" isIdentity="true" headerText="DataModelID" visible="false" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
+                        <e-grid-column field="Name" headerText="Name" width="150"></e-grid-column>
+                        <e-grid-column field="Description" headerText="Description" width="250"></e-grid-column>
+                    </e-grid-columns>
+                </ejs-grid>*@
+        </div>
+        <hr />
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    // TreeView Events start
+
+    var ele;
+    var arr = [];
+    function featureAfterSelect(args) {
+        ele = args.node;
+
+        console.log(args.node);
+    }
+
+    function featureBeforeEdit(args) {
+        console.log("BeforeEdit" + args);
+    }
+
+    function featureAfterEdit(args) {
+        console.log("AfterEdit" + args);
+    }
+
+    function featureactionFail(args) {
+        console.log(args);
+        alert("Action Failed")
+    }
+
+    function featurenodeclicked(args) {
+        var node_id = args.node.getAttribute("data-uid");
+        var node_data = this.getTreeData(node_id)[0];
+        document.getElementById("GroupName").innerText = node_data["Name"];
+        $.ajax({
+            type: 'POST',
+            url: '/Designer/Features/GetFeatureList',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify({ "GroupId": node_id }),
+            error: function (result) {
+                console.log("Data Models load error");
+                //console.log(result.statusText);
+                $("#featuresDiv").html(result.responseText);
+            },
+            success: function (result) {
+                console.log("success");
+                //console.log(result);
+                $("#featuresDiv").html(result);
+            }
+        });
+    }
+       
+
+   
+
+    // TreeView Events end
+
+</script>
+
+<ejs-scripts></ejs-scripts>

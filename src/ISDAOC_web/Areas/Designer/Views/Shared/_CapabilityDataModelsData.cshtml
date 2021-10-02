@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout.cshtml";
+}
+
+<h4>xx: CapabilityDataModel management</h4>
+
+<div class="e-wrapper-container">
+    <div class="row">
+        <div class="col-md-4">
+            <ejs-grid id="Grid" allowPaging="true" allowSorting="true" allowFiltering="true" toolbar="@(new List<string>() {"Search" })">
+                <e-data-manager url="@Url.Action("GetFieldData", "CapabilityData")" adaptor="UrlAdaptor"></e-data-manager>
+                <e-grid-columns>
+                    <e-grid-column field="Id" isIdentity="true" headerText="User UID" visible="false" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
+                    <e-grid-column field="Name" headerText="Field Name" width="150"></e-grid-column>
+                    <e-grid-column field="DataType" headerText="Data Type" width="150"></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+        <div class="col-md-8">
+            <h6>Additional data</h6>
+        </div>
+    </div>
+    @*<div>
+            <button class="btn-primary btn-lg" id="saveForm" value="Save Form" onclick="SaveForm();">Save Form</button>
+        </div>*@
+</div>

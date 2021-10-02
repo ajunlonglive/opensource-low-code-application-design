@@ -1,0 +1,139 @@
+﻿@{
+  Layout = "~/Views/Structure/_Layout.cshtml";
+}
+<link href="http://formio.github.io/formio.js/app/syntax.css" rel="stylesheet" asp-append-version="true">
+<link href="http://formio.github.io/formio.js/app/main.css" rel="stylesheet" asp-append-version="true">
+<link href="http://formio.github.io/formio.js/app/fontawesome/css/font-awesome.min.css" rel="stylesheet" asp-append-version="true">
+<link href="http://formio.github.io/formio.js/app/bootstrap/css/bootstrap.min.css" rel="stylesheet" asp-append-version="true">
+
+<link href="http://formio.github.io/formio.js/app/bootswatch/yeti/bootstrap.min.css" rel="stylesheet" asp-append-version="true">
+
+<link href="http://formio.github.io/formio.js/dist/formio.full.min.css" rel="stylesheet" asp-append-version="true">
+<script src="http://formio.github.io/formio.js/app/jquery/jquery.slim.min.js" asp-append-version="true"></script>
+<script src="http://formio.github.io/formio.js/app/bootstrap/js/bootstrap.min.js" asp-append-version="true"></script>
+<script src="http://formio.github.io/formio.js/dist/formio.full.min.js" asp-append-version="true"></script>
+
+<script type="text/javascript">Formio.icons = 'fontawesome';</script>
+<script type="text/javascript">Formio.setUser(null);</script>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<div id="builder"></div>
+<div>
+    <button class="btn-primary btn-lg" id="saveForm" value="Save Form" onclick="SaveForm();">Save Form</button>
+</div>
+<script type="text/javascript">
+    var exBuilder;
+    window.onload = function () {
+        Formio.builder(document.getElementById('builder'), {}, {
+            builder: {
+                basic: false,
+                advanced: false,
+                data: false,
+                customBasic: {
+                    title: 'Basic Components',
+                    default: true,
+                    weight: 0,
+                    components: {
+                        textfield: true,
+                        textarea: true,
+                        email: true,
+                        phoneNumber: true
+                    }
+                },
+                custom: {
+                    title: 'User Fields',
+                    weight: 10,
+                    components: {
+                        MyResource: {
+                            title: 'Resource',
+                            key: 'MyResource',
+                            icon: 'fa fa-terminal',
+                            schema: {
+                                label: 'Resource',
+                                type: 'resource',
+                                key: 'MyResource',
+                                input: true
+                            }
+                        },
+                        lastName: {
+                            title: 'Last Name',
+                            key: 'lastName',
+                            icon: 'fa fa-terminal',
+                            schema: {
+                                label: 'Last Name',
+                                type: 'textfield',
+                                key: 'lastName',
+                                input: true
+                            }
+                        },
+                        email: {
+                            title: 'Email',
+                            key: 'email',
+                            icon: 'fa fa-at',
+                            schema: {
+                                label: 'Email',
+                                type: 'email',
+                                key: 'email',
+                                input: true
+                            }
+                        },
+                        phoneNumber: {
+                            title: 'Mobile Phone',
+                            key: 'mobilePhone',
+                            icon: 'fa fa-phone-square',
+                            schema: {
+                                label: 'Mobile Phone',
+                                type: 'phoneNumber',
+                                key: 'mobilePhone',
+                                input: true
+                            }
+                        }
+                    }
+                },
+                layout: {
+                    components: {
+                        table: false
+                    }
+                }
+            },
+            editForm: {
+                textfield: [
+                    {
+                        key: 'api',
+                        ignore: true
+                    }
+                ]
+            }
+        }).then(function (builder) {
+            /*form.nosubmit = true;
+            builder.on('submit', function (submission) {
+                // submit click
+            });*/
+            builder.on('saveComponent', function () {
+                exBuilder = builder;
+                //console.log(builder.schema);
+            });
+        });
+    };
+
+    function SaveForm() {
+        console.log(exBuilder.schema);
+
+        $.ajax({
+            type: 'POST',
+            url: '/Json/Builder',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(exBuilder.schema),
+            success: function (result) {
+                window.location.replace(result.newUrl);
+            }
+        });
+    };
+</script>

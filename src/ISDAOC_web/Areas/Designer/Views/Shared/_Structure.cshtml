@@ -1,0 +1,12 @@
+﻿@using Presentation.ViewModels
+@model DCAppStructureViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Layout.cshtml";
+}
+
+<h3>@Model.Name</h3>
+<p>This is the overview of structure</p>
+
+<div class="well well-lg">Top-level Groups <span class="badge">@Model.Hub.Groups.Count</span></div>

@@ -1,0 +1,194 @@
+﻿@model Presentation.ViewModels.RoleAssistanceViewModel
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+
+
+@functions{
+    string groupColor = string.Empty;
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+
+
+@if (Model.IsInternal)
+{
+    groupColor = "green";
+    <h4>Manage Internal Roles &nbsp; <i class="fa fa-sitemap fa-3x" style="font-size:60px;color:@groupColor;"></i></h4>
+}
+else
+{
+    groupColor = "orange";
+    <h4>Manage External Roles &nbsp; <i class="fa fa-sitemap fa-3x" style="font-size:60px;color:@groupColor;"></i></h4>
+}
+
+<div class="e-wrapper-container">
+    <input type="hidden" id="RequestVerificationToken"
+           name="RequestVerificationToken" value="@GetAntiXsrfRequestToken()" />
+    <div class="row">
+        <div class="col-md-4">
+            <button id="AddGroup">Add Group</button>
+            <ejs-treeview id="hierarchical" allowEditing="false" loadOnDemand="false"
+                          allowMultiSelection="false" allowDragAndDrop="false"
+                          actionFailure="actionFail"
+                          nodeSelected="AfterSelect"
+                          nodeClicked="nodeclicked"
+                          nodeEdited="AfterEdit"
+                          nodeEditing="BeforeEdit"
+                          nodeTemplate="@Html.Raw("<div><i class=\"fas fa-sitemap fa-2x\" style=\"color:"+ groupColor + ";\" /><div class=\"ename\"> ${Name} </div></div>")">
+                <e-treeview-fields Id="Id" ParentID="ParentGroupId" Text="Name"
+                                   HasChildren="HasChildren"
+                                   query="new ej.data.Query().addParams('GroupId', '@Model.GroupId')">
+                    <e-data-manager url="/Designer/Groups/GetGroupList" adaptor="UrlAdaptor" offline="true"></e-data-manager>
+                </e-treeview-fields>
+            </ejs-treeview>
+        </div>
+        <div class="col-md-8">
+            <div>
+                <h5>Group: <label id="GroupName">Internal</label></h5>
+            </div>
+            <ejs-grid id="RolesGrid"
+                      load="onLoad" allowPaging="true" allowSorting="true"
+                      allowFiltering="true"
+                      actionComplete="actionComplete"
+                      toolbar="@(new List<string>() {"Add", "Edit", "Delete", "Search" })"
+                      query="new ej.data.Query().addParams('GroupId', '@Model.GroupId')">
+                <e-data-manager url="/Designer/Roles/GetRoleList" adaptor="UrlAdaptor"
+                                insertUrl="/Designer/Roles/CreateRole"
+                                updateUrl="/Designer/Roles/UpdateRole"
+                                removeUrl="/Designer/Roles/RemoveRole"></e-data-manager>
+                <e-grid-editSettings allowEditing="true" allowAdding="true" allowDeleting="true"
+                                     mode="Dialog" template='#dialogtemplate'></e-grid-editSettings>
+                <e-grid-columns>
+                    <e-grid-column field="Id" isIdentity="true" headerText="DataModelID" visible="false" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
+                    <e-grid-column field="Name" headerText="Name" width="150"></e-grid-column>
+                    <e-grid-column field="Description" headerText="Description" width="250"></e-grid-column>
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+        <hr />
+    </div>
+</div>
+
+
+
+<script id='dialogtemplate' type="text/x-template">
+    <div id="dialogTemp">
+    </div>
+</script>
+
+<script>
+
+    // TreeView Events start
+
+    var ele;
+    var arr = [];
+    function AfterSelect(args) {
+        ele = args.node;
+
+        console.log(args.node);
+    }
+
+    function BeforeEdit(args) {
+        console.log("BeforeEdit" + args);
+    }
+
+    function AfterEdit(args) {
+        console.log("AfterEdit" + args);
+    }
+
+    function nodeclicked(args) {
+        var node_id = args.node.getAttribute("data-uid");
+        var node_data = this.getTreeData(node_id)[0];
+        document.getElementById("GroupName").innerText = node_data["Name"];
+        var gridObj = document.getElementById("DataModelsGrid").ej2_instances[0];
+        gridObj.query = new ej.data.Query();
+        gridObj.query.addParams('GroupId', node_id);
+        gridObj.refreshData();
+    }
+
+
+    document.getElementById('AddGroup').addEventListener('click', function () {
+        //var treeObj = document.getElementById('hierarchical').ej2_instances[0];
+        //// var newNode = [{ OrderID: 10000, CustomerID: "NewNode" }, { OrderID: 10001, CustomerID: "NewNode11" }]
+        //var newNode = [{ OrderID: 10000, CustomerID: "NewNode" }]
+        //treeObj.addNodes(newNode, treeObj.selectedNodes[0], 1, false);
+    })
+
+
+    function actionFail(args) {
+        console.log(args);
+        alert("Action Failed")
+    }
+
+    // TreeView Events end
+
+    // Grid Events start
+
+    function onLoad() {
+        var tokenValue = $("input[name=RequestVerificationToken]").val();
+        this.dataSource.headers = [{ 'XSRF-TOKEN': tokenValue }];
+    }
+
+    function actionComplete(args) {
+        if (args.requestType === 'beginEdit' || args.requestType === 'add') {
+            var dialog = args.dialog;
+            // change the header of the dialog
+            dialog.width = 400;
+            dialog.header = args.requestType === 'beginEdit' ? 'Update Data-Table' : 'Add New Data-Table';
+
+                let spinner = ej.popups.createSpinner({ target: args.dialog.element });
+                ej.popups.showSpinner(args.dialog.element);
+                if (args.requestType === 'beginEdit') {
+                    var ajax = new ej.base.Ajax({
+                        url: "@Url.Action("DialogUpdateRole", "Roles")", //render the partial view
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ value: args.rowData })
+                    });
+                    ajax.send().then(function (data) {
+                        appendElement(data, args.form); //Render the edit form with selected record
+                        args.form.elements.namedItem('Name').focus();
+                        ej.popups.hideSpinner(args.dialog.element);
+                    }).catch(function (xhr) {
+                        console.log(xhr);
+                        ej.popups.hideSpinner(args.dialog.element);
+                    });
+                }
+                if (args.requestType === 'add') {
+                    var ajax = new ej.base.Ajax({
+                        url: "@Url.Action("DialogCreateRole", "Roles")", //render the partial view
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ value: args.rowData })
+                    });
+                    ajax.send().then(function (data) {
+                        appendElement(data, args.form); //Render the edit form with selected record
+                        args.form.elements.namedItem('Name').focus();
+                        ej.popups.hideSpinner(args.dialog.element);
+                    }).catch(function (xhr) {
+                        console.log(xhr);
+                        ej.popups.hideSpinner(args.dialog.element);
+                    });
+                }
+            }
+        }
+
+    function appendElement(elementString, form) {
+            form.querySelector("#dialogTemp").innerHTML = elementString;
+            var script = document.createElement('script');
+            script.type = "text/javascript";
+            var serverScript = form.querySelector("#dialogTemp").querySelector('script');
+            script.textContent = serverScript.innerHTML;
+            document.head.appendChild(script);
+            serverScript.remove();
+    }
+
+    // Grid Events end
+</script>
+
+<ejs-scripts></ejs-scripts>

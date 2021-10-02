@@ -1,0 +1,426 @@
+﻿@using Presentation.ViewModels
+@using Presentation.Utility
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DCApp</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+          integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link href="https://cdn.syncfusion.com/ej2/material.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>    
+</head>
+<body >
+
+
+    <div class="col-lg-12 col-sm-12 col-md-12">
+        <div id="wrapper">
+
+
+            <!-- sidebar element declaration -->
+            <ejs-sidebar id="dockSidebar" width="220px" dockSize="72px" enableDock="true">
+                <e-content-template>
+                    <div class="dock">
+                        <ul>
+                            <li class="sidebar-item" id="toggle">
+                                <span class="e-icons"><i class="fas fa-angle-double-right fa-2x"></i></span>
+                                <span class="e-text" title="Menu">Menu</span>
+                            </li>
+                            <li class="sidebar-item" id="groups">
+                                <span class="e-icons"><i class="fas fa-sitemap fa-2x"></i></span>
+                                <span class="e-text" title="Groups">&nbsp; Groups</span>
+                            </li>
+                            <li class="sidebar-item" id="users">
+                                <span class="e-icons"><i class="fas fa-users fa-2x"></i></span>
+                                <span class="e-text" title="Users">&nbsp; Users</span>
+                            </li>
+                            <li class="sidebar-item" id="roles">
+                                <span class="e-icons"><i class="fas fa-user-tag fa-2x"></i></span>
+                                <span class="e-text" title="Roles">&nbsp; Roles</span>
+                            </li>
+                            <li class="sidebar-item" id="data">
+                                <span class="e-icons"><i class="fas fa-table fa-2x"></i></span>
+                                <span class="e-text" title="Data">&nbsp; Data</span>
+                            </li>
+                            <li class="sidebar-item" id="views">
+                                <span class="e-icons"><i class="fas fa-calculator fa-2x"></i></span>
+                                <span class="e-text" title="Views">&nbsp; Views</span>
+                            </li>
+                            <li class="sidebar-item" id="settings">
+                                <span class="e-icons"><i class="fas fa-cog fa-2x"></i></span>
+                                <span class="e-text" title="Settings">&nbsp; Settings</span>
+                            </li>
+                            <li class="sidebar-item" id="egroups">
+                                <span class="e-icons"><i class="fas fa-sitemap fa-2x"></i></span>
+                                <span class="e-text" title="External Groups">&nbsp; External Groups</span>
+                            </li>
+                            <li class="sidebar-item" id="eusers">
+                                <span class="e-icons"><i class="fas fa-users fa-2x"></i></span>
+                                <span class="e-text" title="External Users">&nbsp; External Users</span>
+                            </li>
+                            <li class="sidebar-item" id="eroles">
+                                <span class="e-icons"><i class="fas fa-user-tag fa-2x"></i></span>
+                                <span class="e-text" title="External Roles">&nbsp; External Roles</span>
+                            </li>
+                            <li class="sidebar-item" id="edata">
+                                <span class="e-icons"><i class="fas fa-table fa-2x"></i></span>
+                                <span class="e-text" title="External Data">&nbsp; External Data-Tables</span>
+                            </li>
+                            <li class="sidebar-item" id="eviews">
+                                <span class="e-icons"><i class="fas fa-calculator fa-2x"></i></span>
+                                <span class="e-text" title="External Views">&nbsp; External Views</span>
+                            </li>
+                            <li class="sidebar-item" id="esettings">
+                                <span class="e-icons"><i class="fas fa-cog fa-2x"></i></span>
+                                <span class="e-text" title="External Settings">&nbsp; External Settings</span>
+                            </li>
+                        </ul>
+
+                        <div class="alert alert-secondary align-text-bottom" role="alert">
+                            <p>&copy; 2020</p>
+                            <p>DCApp</p>
+                        </div>
+                    </div>
+                </e-content-template>
+            </ejs-sidebar>
+            <!-- end of sidebar element -->
+            <!-- main content declaration -->
+
+
+            <div class="container-fluid col-md-12">
+                <div>
+                    <img src="https://iem.azurewebsites.net/media/1037/iem_extra_long_new2_small.png" />
+                    <!--<h1>DeviVaibhav</h1>-->
+                </div>
+                <div id="main-content">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <footer>
+        <p>&copy; 2020 - DCApp</p>
+    </footer>
+
+    <script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                dockBar = document.getElementById('dockSidebar').ej2_instances[0];
+                document.getElementById('toggle').onclick = function () {
+                    dockBar.toggle();
+                };
+
+                  document.getElementById('groups').onclick = function () {
+                    selectedStructure('@StringConstants.NodeType_Groups', true);
+                };
+
+                 document.getElementById('users').onclick = function () {
+                     selectedStructure('@StringConstants.NodeType_Users', true);
+                };
+
+                   document.getElementById('roles').onclick = function () {
+                       selectedStructure('@StringConstants.NodeType_Roles', true);
+                };
+
+                document.getElementById('views').onclick = function () {
+                    selectedStructure('@StringConstants.NodeType_Features', true);
+                };
+
+                 document.getElementById('data').onclick = function () {
+                     selectedStructure('@StringConstants.NodeType_DataModels', true);
+                };
+
+                   document.getElementById('settings').onclick = function () {
+                       selectedStructure('@StringConstants.NodeType_CapabilityDataModels', true);
+                };
+
+                // External
+                    document.getElementById('egroups').onclick = function () {
+                        selectedStructure('@StringConstants.NodeType_Groups', false);
+                };
+
+                 document.getElementById('eusers').onclick = function () {
+                     selectedStructure('@StringConstants.NodeType_Users', false);
+                };
+
+                   document.getElementById('eroles').onclick = function () {
+                       selectedStructure('@StringConstants.NodeType_Roles', false);
+                };
+
+                document.getElementById('eviews').onclick = function () {
+                    selectedStructure('@StringConstants.NodeType_Features', false);
+                };
+
+                 document.getElementById('edata').onclick = function () {
+                     selectedStructure('@StringConstants.NodeType_DataModels', false);
+                };
+
+                   document.getElementById('esettings').onclick = function () {
+                       selectedStructure('@StringConstants.NodeType_CapabilityDataModels', false);
+                };
+            });
+
+            //var treeObj = document.getElementById('structureTree').ej2_instances[0];
+            //height = treeObj.outerHeight();
+            //treeObj.bind('mousewheel DOMMouseScroll', function (e) {
+            //    var scrollHeight = e.currentTarget.scrollHeight, isWheelUp;
+            //    if (e.type == 'mousewheel') {
+            //        isWheelUp = (e.originalEvent.wheelDelta > 0) ? true : false;
+            //    }
+            //    else if (e.type == 'DOMMouseScroll') {
+            //        isWheelUp = (e.originalEvent.detail < 0) ? true : false; m
+            //    }
+
+            //    //prevent parent scrolling when TreeView scroll moves to end or start position
+            //    if ((scrollHeight > height) && ((this.scrollTop === (scrollHeight - height) && !isWheelUp) || (this.scrollTop === 0 && isWheelUp))) {
+            //        return false;
+            //    }
+            //});
+
+            function selectedStructure(nodeType, isInternal) {
+                // Get StructureId from treeview
+                console.log(nodeType);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/Designer/Structure/LoadView',
+                    dataType: 'html',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ "NodeType": nodeType, "IsInternal": isInternal}),
+                    error: function (result) {
+                        console.log("error");
+                        //console.log(result.statusText);
+                        $("#main-content").html(result.responseText);
+                    },
+                    success: function (result) {
+                        console.log("success");
+                        //console.log(result);
+                        $("#main-content").html(result);
+                    }
+                });
+            }
+
+            function structureChange(args) {
+
+            }
+
+            var index = 1;
+
+            function menuClick(args) {
+                var treeObj = document.getElementById('structureTree').ej2_instances[0];
+                //var menuObj = document.getElementById('menu').ej2_instances[0];
+                var targetNodeId = treeObj.selectedNodes[0];
+                if (args.item.text == "Add New Item") {
+                    var nodeId = "tree_" + index;
+                    var item = { id: nodeId, name: "New Folder" };
+                    treeObj.addNodes([item], targetNodeId, null);
+                    index++;
+                    treeObj.fields.dataSource.push(item);
+                    treeObj.beginEdit(nodeId);
+                }
+                else if (args.item.text == "Remove Item") {
+                    treeObj.removeNodes([targetNodeId]);
+                }
+                else if (args.item.text == "Rename Item") {
+                    treeObj.beginEdit(targetNodeId);
+                }
+            }
+
+            function beforeOpen(args) {
+                var treeObj = document.getElementById('structureTree').ej2_instances[0];
+
+                var targetNodeId = treeObj.selectedNodes[0];
+                var targetNode = document.getElementById('structureTree').querySelector('[data-uid="' + targetNodeId + '"]');
+                console.log(targetNode);
+                if (targetNode.attributes["nodeType"].value == "GroupsData") {
+                    var menuObj = document.getElementById('menu').ej2_instances[0];
+                    args.items.length = 0;
+                    args.items.push({ text: "Add Group" });
+                    args.items.push({ text: "Add Feature" });
+                }
+                else if (targetNode.attributes["nodeType"].value == "GroupsAndFeatures") {
+                    var menuObj = document.getElementById('menu').ej2_instances[0];
+                    args.items.length = 0;
+                    args.items.push({ text: "Add Group" });
+                    args.items.push({ text: "Add Feature" });
+                }
+
+                //console.log(args);
+                //console.log(menuObj);
+                /*var treeObj = document.getElementById('structureTree').ej2_instances[0];
+
+                var targetNodeId = treeObj.selectedNodes[0];
+                var targetNode = document.getElementById('structureTree').querySelector('[data-uid="' + targetNodeId + '"]');
+                if (targetNode.classList.contains('remove')) {
+                    menuObj.enableItems(['Remove Item'], false);
+                }
+                else {
+                    menuObj.enableItems(['Remove Item'], true);
+                }
+                if (targetNode.classList.contains('rename')) {
+                    menuObj.enableItems(['Rename Item'], false);
+                }
+                else {
+                    menuObj.enableItems(['Rename Item'], true);
+                } */
+            }
+
+            function getMenuItems() {
+            }
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    @*<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>*@
+
+    @RenderSection("Scripts", required: false)
+    <ejs-scripts></ejs-scripts>
+
+    <style>
+        /* Content area styles */
+    body { background-image: url('../../../../wwwroot/images/default/ian-dooley-DuBNA1QMpPA-unsplash.jpg'); 
+           background-repeat: no-repeat; background-attachment: fixed; background-size: cover; }
+        d
+    /*.bgImage {
+            background-image: url("../../../../wwwroot/images/default/ian-dooley-DuBNA1QMpPA-unsplash.jpg");
+          
+        }*/
+        .title {
+            text-align: center;
+            font-size: 20px;
+            padding: 15px;
+        }
+
+        .sub-title {
+            text-align: center;
+            font-size: 16px;
+            padding: 10px;
+        }
+
+        #wrapper .sub-title .column {
+            display: inline-block;
+            padding: 10px;
+        }
+
+        #dockSidebar.e-sidebar.e-right.e-close {
+            visibility: visible;
+            transform: translateX(0%);
+        }
+
+        #dockSidebar .e-icons::before {
+            font-size: 25px;
+        }
+
+        /* dockbar icon Style */
+
+        #dockSidebar .home::before {
+            content: '\e102';
+        }
+
+        #dockSidebar .profile::before {
+            content: '\e10c';
+        }
+
+        #dockSidebar .info::before {
+            content: '\e11b';
+        }
+
+        #dockSidebar .settings::before {
+            content: '\e10b';
+        }
+
+        .e-sidebar .expand::before,
+        .e-sidebar.e-right.e-open .expand::before {
+            content: '\e10f';
+        }
+
+        .e-sidebar.e-open .expand::before,
+        .e-sidebar.e-right .expand::before {
+            content: '\e10e';
+        }
+
+        /* end of dockbar icon Style */
+
+        #dockSidebar.e-close .sidebar-item {
+            padding: 5px 20px;
+        }
+
+        #dockSidebar.e-dock.e-close span.e-text {
+            display: none;
+        }
+
+        #dockSidebar.e-dock.e-open span.e-text {
+            display: inline-block;
+        }
+
+        #dockSidebar li {
+            list-style-type: none;
+            cursor: pointer;
+        }
+
+        #dockSidebar ul {
+            padding: 0px;
+        }
+
+        #dockSidebar.e-sidebar ul li:hover span {
+            color: white
+        }
+
+        #dockSidebar span.e-icons {
+            color: #c0c2c5;
+            line-height: 2
+        }
+
+        .e-open .e-icons {
+            margin-right: 16px;
+        }
+
+        .e-open .e-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 23px;
+            font-size: 15px;
+        }
+
+        .sidebar-item {
+            text-align: center;
+            border-bottom: 1px #e5e5e58a solid;
+        }
+
+        .e-sidebar.e-open .sidebar-item {
+            text-align: left;
+            padding-left: 15px;
+            color: #c0c2c5;
+        }
+
+        #dockSidebar.e-sidebar {
+            background: #2d323e;
+            overflow: hidden;
+        }
+
+        /* custom generated icons styles */
+        @@font-face {
+            font-family: 'e-icons';
+            src: url(data:application/x-font-ttf;charset=utf-8;base64,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) format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        /* end of custom generated icons styles */
+
+        /* end of sidebar styles */
+    </style>
+</body>
+</html>

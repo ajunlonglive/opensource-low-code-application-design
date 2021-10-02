@@ -1,0 +1,197 @@
+﻿@model Presentation.ViewModels.DataModelAssistanceViewModel
+
+
+@inject Presentation.Services.IDataModelService DataModelService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+@functions{
+    public string GetAntiXsrfRequestToken()
+    {
+        return Xsrf.GetAndStoreTokens(Context).RequestToken;
+    }
+}
+
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <div class="e-float-input e-control-wrapper">
+            <button class="btn-primary" id="manageTables" onclick='manageTablessButtonButtonClick(); return false;'>List Data-Tables</button>
+        </div>
+    </div>
+    <div class="form-group col-md-4">
+        <div class="e-float-input e-control-wrapper">
+            <ejs-dropdownlist id="SelectedDataModelDropDown" value="@Model.DataModelId" change="dataModelDropdownListSelectionChange"
+                              dataSource="@DataModelService.GetDataModelListAsSelectListItems()"
+                              placeholder="Selected Data-Table:"
+                              floatLabelType="Always" popupHeight="300px">
+                <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
+            </ejs-dropdownlist>
+        </div>
+    </div>
+</div>
+
+<h4>Data-Table: @Model.Name</h4>
+<h6>Description: @Model.Description</h6>
+
+<div class="e-wrapper-container">
+    <input type="hidden" id="RequestVerificationToken"
+           name="RequestVerificationToken" value="@GetAntiXsrfRequestToken()" />
+    @Html.HiddenFor(x => x.GroupId)
+    @Html.HiddenFor(x => x.DataModelId)
+    <div class="row">
+        
+
+        <div class="col-md-8">
+            <ejs-grid id="DataFieldsGrid" load="onLoad" allowPaging="true" allowSorting="true"
+                      allowFiltering="true"
+                      actionComplete="actionComplete"
+                      toolbar="@(new List<string>() {"Add", "Edit", "Delete", "Search" })"
+                      query="new ej.data.Query().addParams('DataModelId', '@Model.DataModelId')">
+                <e-data-manager url="/Designer/DataModels/GetDataFields" adaptor="UrlAdaptor"
+                                insertUrl="/Designer/DataModels/CreateDataField"
+                                updateUrl="/Designer/DataModels/UpdateDataField"
+                                removeUrl="/Designer/DataModels/RemoveDataField"></e-data-manager>
+                <e-grid-editSettings allowEditing="true" allowAdding="true" allowDeleting="true"
+                                     mode="Dialog" template='#dialogtemplate'></e-grid-editSettings>
+                <e-grid-columns>
+                    <e-grid-column field="Id" isIdentity="true" headerText="DataFieldID" visible="false" isPrimaryKey="true" textAlign="Right" width="120"></e-grid-column>
+                    <e-grid-column field="Name" headerText="Name" width="150"></e-grid-column>
+                    <e-grid-column field="Description" headerText="Description" width="150"></e-grid-column>
+                    <e-grid-column field="DataType" headerText="Data Type" editType="dropdownedit" width="150"></e-grid-column>
+                    <e-grid-column headerText="Properties" template="#configureFieldsManageButton" width="150"></e-grid-column>
+                    @*<e-grid-column field="Details" headerText="Details" width="150"></e-grid-column>
+                        <e-grid-column field="Remove" headerText="Remove" width="150"></e-grid-column>*@
+                </e-grid-columns>
+            </ejs-grid>
+        </div>
+    </div>
+    <hr />
+</div>
+
+
+<script id='dialogtemplate' type="text/x-template">
+    <div id="dialogTemp">
+    </div>
+</script>
+
+
+<script id="configureFieldsManageButton" type="text/x-template">
+    <button class="btn-primary" id="configureFieldsButton${Id}" onclick='configureFieldsButtonButtonClick(&quot;${Id}&quot;); return false;'>Manage Data-Properties</button>
+</script>
+
+<script>
+
+        function onLoad() {
+            var tokenValue = $("input[name=RequestVerificationToken]").val();
+            this.dataSource.headers = [{ 'XSRF-TOKEN': tokenValue }];
+    }
+
+        function actionComplete(args) {
+        if (args.requestType === 'beginEdit' || args.requestType === 'add') {
+            var dialog = args.dialog;
+            // change the header of the dialog
+            dialog.width = 400;
+            dialog.header = args.requestType === 'beginEdit' ? 'Update Data-Field' : 'Add New Data-Field';
+
+                let spinner = ej.popups.createSpinner({ target: args.dialog.element });
+                ej.popups.showSpinner(args.dialog.element);
+                if (args.requestType === 'beginEdit') {
+                    var ajax = new ej.base.Ajax({
+                        url: "/Designer/DataModels/DialogUpdateDataField", //render the partial view
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ value: args.rowData })
+                    });
+                    ajax.send().then(function (data) {
+                        appendElement(data, args.form); //Render the edit form with selected record
+                        args.form.elements.namedItem('Name').focus();
+                        ej.popups.hideSpinner(args.dialog.element);
+                    }).catch(function (xhr) {
+                        console.log(xhr);
+                        ej.popups.hideSpinner(args.dialog.element);
+                    });
+                }
+                if (args.requestType === 'add') {
+                    var ajax = new ej.base.Ajax({
+                        url: "/Designer/DataModels/DialogCreateDataField", //render the partial view
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ value: args.rowData })
+                    });
+                    ajax.send().then(function (data) {
+                        appendElement(data, args.form); //Render the edit form with selected record
+                        args.form.elements.namedItem('Name').focus();
+                        ej.popups.hideSpinner(args.dialog.element);
+                    }).catch(function (xhr) {
+                        console.log(xhr);
+                        ej.popups.hideSpinner(args.dialog.element);
+                    });
+            }
+
+            @*var grid = document.getElementById("DataFieldsGrid").ej2_instances[0];
+            grid.query = new ej.data.Query();
+            grid.query.addParams('DataModelId', '@Model.DataModelId');
+            grid.query.addParams('StructureId', '@Model.StructureId');
+
+            var tokenValue = $("input[name=RequestVerificationToken]").val();
+            this.dataSource.dataSource.headers = [{ 'XSRF-TOKEN': tokenValue }];*@
+
+            }
+        }
+
+        function appendElement(elementString, form) {
+            form.querySelector("#dialogTemp").innerHTML = elementString;
+            var script = document.createElement('script');
+            script.type = "text/javascript";
+            var serverScript = form.querySelector("#dialogTemp").querySelector('script');
+            script.textContent = serverScript.innerHTML;
+            document.head.appendChild(script);
+            serverScript.remove();
+    }
+
+    function dataModelDropdownListSelectionChange() {
+        var selectedDataModel = document.getElementById('SelectedDataModelDropDown').ej2_instances[0];
+        $.ajax({
+            type: 'POST',
+            url: '/Designer/DataModels/GetDataModelData',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify({ "NodeId": selectedDataModel.value }),
+            error: function (result) {
+                console.log("Data Models load error");
+                //console.log(result.statusText);
+                $("#main-content").html(result.responseText);
+            },
+            success: function (result) {
+                console.log("success");
+                //console.log(result);
+                $("#main-content").html(result);
+            }
+        });
+    }
+
+    function manageTablessButtonButtonClick(){
+        document.getElementById('data').click();
+    }
+
+    function configureFieldsButtonButtonClick(args) {
+        $.ajax({
+            type: 'POST',
+            url: '/Designer/DataModels/GetDataFieldData',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify({ "NodeId": args }),
+            error: function (result) {
+                console.log("Data Models load error");
+                //console.log(result.statusText);
+                $("#main-content").html(result.responseText);
+            },
+            success: function (result) {
+                console.log("success");
+                //console.log(result);
+                $("#main-content").html(result);
+            }
+        });
+    }
+
+</script>
+<ejs-scripts></ejs-scripts>

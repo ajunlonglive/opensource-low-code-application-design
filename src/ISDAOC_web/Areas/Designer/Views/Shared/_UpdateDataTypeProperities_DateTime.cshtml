@@ -1,0 +1,73 @@
+﻿@model Presentation.ViewModels.DCAppDataTypeDefinition_DateTimeViewModel
+
+@if (!string.IsNullOrEmpty(Model.DisplayMessage))
+{
+    <div class="alert alert-success" role="alert">
+        @Model.DisplayMessage
+    </div>
+}
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+
+<form name="updateProperties">
+    <input type="hidden" name="DataModelId" value="@Model.DataModelId" />
+    <input type="hidden" name="DataFieldId" value="@Model.DataFieldId" />
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <label>Allow null value: </label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <ejs-checkbox id="AllowNullValue" name="AllowNullValue" checked="@Model.AllowNullValue"></ejs-checkbox>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <label>Allow only unique value: </label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <ejs-checkbox id="AllowOnlyUniqueValue" name="AllowOnlyUniqueValue" checked="@Model.AllowOnlyUniqueValue"></ejs-checkbox>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <label>Format: </label>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <ejs-textbox id="Format" name="Format" value="@Model.Format"></ejs-textbox>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                @*<button class="btn-primary" id="cancelButton" onclick='cancelButtonClick(); return false;'>Cancel</button>*@
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <div class="e-float-input e-control-wrapper">
+                <button class="btn-primary" id="saveButton" onclick='savePropertiesButtonClick("_DateTime"); return false;'>Update</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<ejs-scripts></ejs-scripts>

@@ -1,0 +1,62 @@
+﻿@model Presentation.ViewModels.DCAppWorkFlowViewModel;
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+<h4>WorkFlow: @Model.BreadCrumb </h4>
+
+@if (Model.Pages != null && Model.Pages.Count > 0)
+{
+<form method="post" action="/Designer/WorkFlows/ProcessWorkFlowData">
+    @foreach (var page in Model.Pages)
+    {
+        @await Html.PartialAsync("_GUIPage", page);
+    }
+    @Html.HiddenFor(x => x.DataRowId)
+    @Html.HiddenFor(x => x.FeatureId)
+</form>
+    }
+    else
+    {
+    <p>No Pages have been defined yet: </p>
+    }
+
+
+    <script>
+
+        function AddNewPageButtonClicked(addPageId, dataRowId) {
+            console.log("addPageId: " + addPageId);
+            $.ajax({
+                type: 'POST',
+                url: '/Designer/Features/AddNewPage',
+                dataType: 'html',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    "AddNewPageId": addPageId, "DataRowId": dataRowId
+                }),
+                error: function (result) {
+                    console.log("Data Models load error");
+                    //console.log(result.statusText);
+                    $("#NewPage_" + addPageId).html(result.responseText);
+                },
+                success: function (result) {
+                    console.log(result);
+
+                    $("#NewPage_" + addPageId + ' .dialogContent').html(result);
+                    var dialog = document.getElementById("NewPage_" + addPageId).ej2_instances[0];
+                    dialog.show();
+
+                    //$("#NewPage_" + addPageId + ' .modal-body').html(result);
+                    //$("#NewPage_" + addPageId).modal('show');
+
+                    //  $('#stateId').append('<option value="' + item.Value + '">' + item.Text + '</option>')
+                }
+            });
+        }
+
+    </script>
+
+    <ejs-scripts></ejs-scripts>
+
+    <style>
+    </style>

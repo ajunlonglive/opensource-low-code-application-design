@@ -1,0 +1,93 @@
+﻿@model Presentation.ViewModels.FeatureAssistanceViewModel;
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+@if (Model.Features!=null && Model.Features.Count > 0)
+{
+    foreach (var feature in Model.Features)
+    {
+
+        <ej-tile id="tile" image-template-id="imageTemplate">
+            <e-tile-caption enabled="true" text="Group name: TBD" />
+        </ej-tile>
+
+        <div id="imageTemplate">
+            <div id="appimage" ef="">
+            </div>
+
+
+            <p class="tileMargin">
+
+                <span class="caption">@feature.Name</span><br />
+                <span class="caption">@feature.Description</span><br />
+                @foreach (var workFlow in feature.WorkFlows)
+                {
+                    <button class="btn-primary" id="workFlowButtonButton${Id}" onclick='workFlowButtonClicked(&quot;@workFlow.Id&quot;,&quot;@workFlow.DataRowId&quot;); return false;'>@workFlow.Name</button>
+                }
+
+            </p>
+        </div>
+    }
+}
+else
+{
+    <p>No features have been defined yet: </p>
+}
+
+
+<script>
+
+    function workFlowButtonClicked(workFlowId, dataRowId) {
+        console.log("workFlowID: " + workFlowId + " DRId: " + dataRowId);
+        $.ajax({
+            type: 'POST',
+            url: '/Designer/Features/GetWorkFlowData',
+            dataType: 'html',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "WorkFlowId": workFlowId, "DataRowId": dataRowId}),
+            error: function (result) {
+                console.log("Data Models load error");
+                //console.log(result.statusText);
+                $("#main-content").html(result.responseText);
+            },
+            success: function (result) {
+                console.log("success");
+                //console.log(result);
+                $("#main-content").html(result);
+            }
+        });
+    }
+                                                           
+
+
+</script>
+
+<ejs-scripts></ejs-scripts>
+
+<style>
+
+    #appimage {
+        /* background-image: url("http://js.syncfusion.com/UG/mobile/content/google.png");*/
+        background-color: aquamarine;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: 50% auto;
+        display: table-cell;
+        width: 45%;
+    }
+
+    .tileMargin {
+        background-color: aquamarine;
+        display: table-cell;
+        padding-top: 25px;
+    }
+
+    .e-tile-template {
+        background-color: aquamarine;
+        display: table;
+        height: 100%;
+        width: 100%;
+    }
+</style>

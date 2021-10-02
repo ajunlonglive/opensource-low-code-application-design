@@ -1,0 +1,49 @@
+﻿@model Presentation.ViewModels.DCAppDataFieldViewModel
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <div class="e-float-input e-control-wrapper">
+                <input name="Id" id="Id" value="@Model.Id" disabled />
+                <span class="e-float-line"></span>
+                <label class="e-float-text e-label-top">Field Id</label>
+            </div>
+        </div>
+
+    </div>
+
+<div class="form-row">
+    <div class="form-group col-md-12">
+        <div class="e-float-input e-control-wrapper">
+            <input name="Name" id="Name" value="@Model.Name" />
+            <span class="e-float-line"></span>
+            <label class="e-float-text e-label-top">Name</label>
+        </div>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group col-md-12">
+        <div class="e-float-input e-control-wrapper">
+            <input name="Description" id="Description" value="@Model.Description" />
+            <span class="e-float-line"></span>
+            <label class="e-float-text e-label-top">Description</label>
+        </div>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group col-md-12">
+        <div class="e-float-input e-control-wrapper">
+            <ejs-dropdownlist id="DataType" value="@Model.DataType"
+                              dataSource="@DataDefinitionService.GetDataTypesAsSelectListItems()"
+                              placeholder="Data Type"
+                              floatLabelType="Always" popupHeight="300px">
+                <e-dropdownlist-fields text="Text" value="Value"></e-dropdownlist-fields>
+            </ejs-dropdownlist>
+        </div>
+    </div>
+</div>
+
+<ejs-scripts></ejs-scripts>

@@ -1,0 +1,35 @@
+﻿@using HtmlHelpers.BeginCollectionItemCore;
+@model Presentation.ViewModels.DCAppPageViewModel;
+
+@inject Presentation.Services.IDataDefinitionService DataDefinitionService;
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Xsrf;
+
+<h4>Page: @Model.Name </h4>
+
+@Html.HiddenFor(x => x.DataRowId)
+@Html.HiddenFor(x => x.GroupId)
+
+@using (Html.BeginCollectionItem("Pages"))
+{
+    @if (Model.Controls != null && Model.Controls.Count > 0)
+    {
+        @foreach (var control in Model.Controls)
+        {
+            control.DataRowId = Model.DataRowId;
+            @await Html.PartialAsync("_GUIControl", control);
+        }
+    }
+
+    else
+    {
+        <p>No Pages have been defined yet: </p>
+    }
+}
+
+<script>
+</script>
+
+<ejs-scripts></ejs-scripts>
+
+<style>
+</style>
